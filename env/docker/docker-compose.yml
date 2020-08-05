@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  webserver:
+    image: nginx:alpine
+    container_name: webserver-my
+    working_dir: /app
+    volumes:
+      - ../../project/app/backend:/app
+      - ../webserver/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+
+  app-my:
+    build: app
+    container_name: app-my
+    volumes:
+      - ../../project/app/backend:/app
+      - bash-dir:/home/worker
+
+  db-my:
+    image: mysql:8.0
+    container_name: db-my
+    environment:
+      MYSQL_ROOT_PASSWORD: dev
+      MYSQL_DATABASE: dev
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: dev
+    volumes:
+      - db-my-data:/var/lib/mysql
+
+volumes:
+  bash-dir:
+    name: bash-dir
+  db-my-data:
+    name: db-my-data
