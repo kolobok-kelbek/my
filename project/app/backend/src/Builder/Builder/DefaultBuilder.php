@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace My\Builder\Builder;
 
 use InvalidArgumentException;
+use My\Builder\Analyzer;
 use My\Builder\Builder;
 use My\Builder\Dto\Value;
 use My\Builder\Exception\BuildException;
@@ -17,12 +18,16 @@ class DefaultBuilder implements Builder
     /** @var array<Way> */
     protected array $ways;
 
+    /** @var array<int, Analyzer> */
+    protected array $analyzers;
+
     protected array $fieldNames = [];
 
-    public function __construct(string $modelName, array $ways)
+    public function __construct(string $modelName, array $ways, array $analyzers)
     {
         $this->modelName = $modelName;
         $this->ways = $ways;
+        $this->analyzers = $analyzers;
     }
 
     public function __call(string $fieldName, array $arguments): self
@@ -41,26 +46,10 @@ class DefaultBuilder implements Builder
 
     public function build(int $useWay = Ways::ANY): object
     {
-        $maps = [];
-        foreach ($this->fieldNames as $fieldName => $value) {
-            $maps[$value->getWay() ?? $useWay][$fieldName] = $value->getValue();
-        }
-
         usort($this->ways, static fn(Way $a, Way $b): bool => $a->getPriority() > $b->getPriority());
 
-        $subject = null;
-        foreach ($this->ways as $way) {
-            $wayCode = $way->getWayCode();
-            foreach ($maps as $mapsKeyWayCode => $mapsKeyFieldNamesMap) {
-                if ($wayCode & $mapsKeyWayCode) {
-                    $fieldNames = $way->hasPreparerCollection()
-                        ? $way->getPreparerCollection()->prepareFieldsNames($mapsKeyFieldNamesMap)
-                        : $mapsKeyFieldNamesMap;
-
-                    $subject = $way->pass($subject ?? $this->modelName, $fieldNames);
-                }
-            }
-        }
+        $maps = $this->createFieldsMap($useWay);
+        $subject = $this->buildSubject($maps);
 
         $this->clean();
 
@@ -74,5 +63,72 @@ class DefaultBuilder implements Builder
     public function clean(): void
     {
         $this->fieldNames = [];
+    }
+
+    protected function createFieldsMap(int $useWay): array
+    {
+        $maps = [];
+
+        $maxWayPriority = $this->ways[0]->getPriority();
+        $lastPriorityWayCode = $this->ways[0]->getWayCode();
+
+        foreach ($this->ways as $way) {
+            if ($way->getPriority() > $maxWayPriority) {
+                $maxWayPriority = $way->getPriority();
+                $lastPriorityWayCode = $way->getWayCode();
+            }
+        }
+
+        foreach ($this->fieldNames as $fieldName => $value) {
+            $wayCode = $value->getWay() ?? $useWay;
+            $anyFound = false;
+            if ($wayCode === Ways::ANY) {
+                foreach ($this->ways as $way) {
+                    if ($way->hasPreparerCollection()) {
+                        $fieldName = $way->getPreparerCollection()->prepareFieldName($fieldName);
+                    }
+                    $analyzer = $this->analyzers[$way->getWayCode()] ?? null;
+
+                    if ($analyzer !== null && $analyzer->can($this->modelName, $fieldName)) {
+                        $maps[$way->getWayCode()][$fieldName] = $value->getValue();
+                        $anyFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!$anyFound) {
+                foreach ($this->ways as $way) {
+                    if ($lastPriorityWayCode === $way->getWayCode() && $way->hasPreparerCollection()) {
+                        $fieldName = $way->getPreparerCollection()->prepareFieldName($fieldName);
+                        break;
+                    }
+                }
+
+                $maps[$lastPriorityWayCode][$fieldName] = $value->getValue();
+            }
+        }
+
+        return $maps;
+    }
+
+    protected function buildSubject(array $maps): ?object
+    {
+        $subject = null;
+        foreach ($this->ways as $way) {
+            $wayCode = $way->getWayCode();
+
+            if (!isset($maps[$wayCode])) {
+                continue;
+            }
+
+            foreach ($maps as $mapsKeyWayCode => $fieldNames) {
+                if ($wayCode & $mapsKeyWayCode) {
+                    $subject = $way->pass($subject ?? $this->modelName, $fieldNames);
+                }
+            }
+        }
+
+        return $subject;
     }
 }

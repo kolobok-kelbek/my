@@ -7,5 +7,5 @@ interface PreparerCollection
 {
     public function hasPreparers(): bool;
 
-    public function prepareFieldsNames(array $fieldsNames): array;
+    public function prepareFieldName(string $fieldName): string;
 }

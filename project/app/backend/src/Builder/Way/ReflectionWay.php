@@ -12,15 +12,15 @@ class ReflectionWay extends Way
     public function pass(string|object $model, array $map): object
     {
         try {
-            $class = new ReflectionClass($model);
+            $reflectionClass = new ReflectionClass($model);
         } catch (ReflectionException $e) {
             $modelName = is_object($model) ? get_class($model) : $model;
             throw new BuildException("Build model \"{$modelName}\" is failed.", $e);
         }
 
-        $instance = is_object($model) ? $model : $class->newInstance();
+        $instance = is_object($model) ? $model : $reflectionClass->newInstance();
 
-        $properties = $class->getProperties();
+        $properties = $reflectionClass->getProperties();
         foreach ($properties as $property) {
             $value = $map[$property->getName()] ?? null;
 

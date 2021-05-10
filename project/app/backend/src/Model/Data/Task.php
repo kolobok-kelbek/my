@@ -3,10 +3,6 @@ declare(strict_types=1);
 
 namespace My\Model\Data;
 
-use My\Builder\Builder\Builder;
-use My\Model\Data\Builder\TaskBuilder;
-
-#[Builder(TaskBuilder::class)]
 class Task
 {
     private string $title;

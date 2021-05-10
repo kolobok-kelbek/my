@@ -21,17 +21,13 @@ class DefaultPreparerCollection implements PreparerCollection
         return !empty($this->preparers);
     }
 
-    public function prepareFieldsNames(array $fieldsNames): array
+    public function prepareFieldName(string $fieldName): string
     {
-        $formattedFieldNames = [];
-        foreach ($fieldsNames as $fieldName => $value) {
-            $formattedFieldName = $fieldName;
-            foreach ($this->preparers as $preparer) {
-                $formattedFieldName = $preparer->prepare($fieldName);
-            }
-            $formattedFieldNames[$formattedFieldName] = $value;
+        $formattedFieldName = $fieldName;
+        foreach ($this->preparers as $preparer) {
+            $formattedFieldName = $preparer->prepare($fieldName);
         }
 
-        return $formattedFieldNames;
+        return $formattedFieldName;
     }
 }

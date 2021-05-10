@@ -57,12 +57,18 @@ services:
       - 4
       - '@My\Builder\PreparerCollection\DefaultPreparerCollection'
 
+  My\Builder\Analyzer\:
+    resource: '../src/Builder/Analyzer/'
+
   My\Builder\Manager\DefaultBuildManager:
     arguments:
       - - '@My\Builder\Way\ConstructorWay'
         - '@My\Builder\Way\PublicFieldsWay'
         - '@My\Builder\Way\SetterWay'
         - '@My\Builder\Way\ReflectionWay'
+      - !php/const:My\Builder\Ways::CONSTRUCTOR: '@My\Builder\Analyzer\ConstructAnalyzer'
+        !php/const:My\Builder\Ways::PUBLIC_FIELDS: '@My\Builder\Analyzer\PublicFieldsAnalyzer'
+        !php/const:My\Builder\Ways::SETTERS: '@My\Builder\Analyzer\SetterAnalyzer'
 
   my.model_builder.task:
     class: My\Builder\Builder

@@ -18,6 +18,6 @@ class DefaultController
             ->setDescription('Lorem ...')
         ;
 
-        return $taskBuilder->build(Ways::REFLECTION);
+        return $taskBuilder->build();
     }
 }
