@@ -82,3 +82,17 @@ public function index(Builder $taskBuilder): Task
     return $taskBuilder->build();
 }
 ```
+
+Пути можно комбинировать:
+```PHP
+#[Route('/', name: 'index')]
+public function index(Builder $taskBuilder): Task
+{
+    $taskBuilder
+        ->setTitle('this is task', Ways::PUBLIC_FIELDS | Ways::SETTERS)
+        ->setDescription('Lorem ...')
+    ;
+
+    return $taskBuilder->build(Ways::CONSTRUCTOR | Ways::REFLECTION);
+}
+```
