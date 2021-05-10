@@ -62,10 +62,17 @@ class DefaultBuilder implements Builder
             }
         }
 
+        $this->clean();
+
         if ($subject === null) {
             throw new BuildException('Not found way for build.');
         }
 
         return $subject;
+    }
+
+    public function clean(): void
+    {
+        $this->fieldNames = [];
     }
 }

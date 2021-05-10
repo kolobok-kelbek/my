@@ -76,3 +76,7 @@ services:
     tags: [ controller.service_arguments ]
     bind:
       $taskBuilder: '@my.model_builder.task'
+
+  My\Listener\ViewListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.view }
