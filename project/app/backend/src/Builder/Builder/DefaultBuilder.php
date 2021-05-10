@@ -69,13 +69,15 @@ class DefaultBuilder implements Builder
     {
         $maps = [];
 
-        $maxWayPriority = $this->ways[0]->getPriority();
-        $lastPriorityWayCode = $this->ways[0]->getWayCode();
+        if ($useWay === Ways::ANY) {
+            $maxWayPriority = $this->ways[0]->getPriority();
+            $lastPriorityWayCode = $this->ways[0]->getWayCode();
 
-        foreach ($this->ways as $way) {
-            if ($way->getPriority() > $maxWayPriority) {
-                $maxWayPriority = $way->getPriority();
-                $lastPriorityWayCode = $way->getWayCode();
+            foreach ($this->ways as $way) {
+                if ($way->getPriority() > $maxWayPriority) {
+                    $maxWayPriority = $way->getPriority();
+                    $lastPriorityWayCode = $way->getWayCode();
+                }
             }
         }
 
@@ -98,14 +100,16 @@ class DefaultBuilder implements Builder
             }
 
             if (!$anyFound) {
+                $commonWayCode = $lastPriorityWayCode ?? $useWay;
+
                 foreach ($this->ways as $way) {
-                    if ($lastPriorityWayCode === $way->getWayCode() && $way->hasPreparerCollection()) {
+                    if ($commonWayCode === $way->getWayCode() && $way->hasPreparerCollection()) {
                         $fieldName = $way->getPreparerCollection()->prepareFieldName($fieldName);
                         break;
                     }
                 }
 
-                $maps[$lastPriorityWayCode][$fieldName] = $value->getValue();
+                $maps[$commonWayCode][$fieldName] = $value->getValue();
             }
         }
 
