@@ -1,4 +1,6 @@
-# Билдер для моделей.
+# Билдер для моделей. (MVP, namespace bulder будет переведен в отдельный пакет)
+
+namespace bulder содержит набросок библиотеки для создания моделей при помощи билдера. 
 
 Пример использования в рамках symfony:
 ```PHP
@@ -13,7 +15,7 @@ public function index(Builder $taskBuilder): Task
     return $taskBuilder->build();
 }
 
-// сама модель
+// пример модели
 class Task
 {
     private string $title;
