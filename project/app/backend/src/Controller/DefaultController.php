@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace My\Controller;
 
-use My\Builder\Builder;
-use My\Builder\Ways;
+use ModelBuilder\Builder;
 use My\Model\Data\Task;
 use Symfony\Component\Routing\Annotation\Route;
 

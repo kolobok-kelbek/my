@@ -1,9 +1,9 @@
 version: "3.7"
 
 services:
-  webserver-my:
+  my-web:
     image: nginx:alpine
-    container_name: webserver-my
+    container_name: my-web
     working_dir: /app
     volumes:
       - ../../project/app/backend:/app
@@ -11,43 +11,43 @@ services:
     ports:
       - 80:80
     networks:
-      - app-my-network
+      - mynet
 
-  app-backend-my:
+  my-api:
     build: app/backend
-    container_name: app-backend-my
+    container_name: my-api
     volumes:
       - ../../project/app/backend:/app
-      - backend-user-worker:/home/worker
+      - my-api-user-worker:/home/worker
     networks:
-      - app-my-network
+      - mynet
 
-  app-frontend-my:
+  my-app:
     build: app/frontend
-    container_name: app-frontend-my
+    container_name: my-app
     volumes:
       - ../../project/app/frontend:/app
-      - frontend-bash-dir:/home/worker
+      - my-app-user-worker:/home/worker
     networks:
-      - app-my-network
+      - mynet
 
-  db-my:
+  my-db:
     image: mysql:8.0
-    container_name: db-my
+    container_name: my-db
     environment:
       MYSQL_ROOT_PASSWORD: dev
       MYSQL_DATABASE: dev
       MYSQL_USER: dev
       MYSQL_PASSWORD: dev
     volumes:
-      - db-my-data:/var/lib/mysql
+      - my-db-data:/var/lib/mysql
     networks:
-      - app-my-network
+      - mynet
 
 volumes:
-  backend-user-worker:
-  frontend-bash-dir:
-  db-my-data:
+  my-api-user-worker:
+  my-app-user-worker:
+  my-db-data:
 
 networks:
-  app-my-network:
+  mynet:

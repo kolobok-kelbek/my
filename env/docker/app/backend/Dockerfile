@@ -7,10 +7,13 @@ RUN useradd -s /bin/bash -d /home/worker/ -m -G sudo worker \
     && apt-get -y update \
     ## install soft
     && apt-get install -y \
+        libzip-dev \
         curl \
         git \
         vim \
         htop \
+    ## php extentions
+    && docker-php-ext-install zip \
     ## install composer
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     ## install symfony/cli

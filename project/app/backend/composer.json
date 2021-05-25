@@ -1,8 +1,14 @@
 {
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
     "minimum-stability": "dev",
     "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Ilia Krasnoschekov (kelbek)",
+            "email": "dev_kelbek@mail.ru"
+        }
+    ],
     "require": {
         "php": "^8.0",
         "ext-ctype": "*",
@@ -14,8 +20,19 @@
         "symfony/framework-bundle": "5.2.*",
         "symfony/property-access": "5.2.*",
         "symfony/serializer": "5.2.*",
-        "symfony/yaml": "5.2.*"
+        "symfony/yaml": "5.2.*",
+        "kelbek/model-builder-symfony": "dev-main"
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/kolobok-kelbek/model-builder-symfony.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/kolobok-kelbek/model-builder.git"
+        }
+    ],
     "config": {
         "optimize-autoloader": true,
         "preferred-install": {

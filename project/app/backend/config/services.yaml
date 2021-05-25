@@ -30,50 +30,10 @@ services:
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
-  My\Builder\PreparerCollection\DefaultPreparerCollection:
-    arguments:
-      - '@My\Builder\Preparer\SetterNameToFieldNamePreparer'
-
-  My\Builder\Way\PublicFieldsWay:
-    arguments:
-      - !php/const My\Builder\Ways::PUBLIC_FIELDS
-      - 2
-      - '@My\Builder\PreparerCollection\DefaultPreparerCollection'
-
-  My\Builder\Way\ConstructorWay:
-    arguments:
-      - !php/const My\Builder\Ways::CONSTRUCTOR
-      - 1
-      - '@My\Builder\PreparerCollection\DefaultPreparerCollection'
-
-  My\Builder\Way\SetterWay:
-    arguments:
-      - !php/const My\Builder\Ways::SETTERS
-      - 3
-
-  My\Builder\Way\ReflectionWay:
-    arguments:
-      - !php/const My\Builder\Ways::REFLECTION
-      - 4
-      - '@My\Builder\PreparerCollection\DefaultPreparerCollection'
-
-  My\Builder\Analyzer\:
-    resource: '../src/Builder/Analyzer/'
-
-  My\Builder\Manager\DefaultBuildManager:
-    arguments:
-      - - '@My\Builder\Way\ConstructorWay'
-        - '@My\Builder\Way\PublicFieldsWay'
-        - '@My\Builder\Way\SetterWay'
-        - '@My\Builder\Way\ReflectionWay'
-      - !php/const:My\Builder\Ways::CONSTRUCTOR: '@My\Builder\Analyzer\ConstructAnalyzer'
-        !php/const:My\Builder\Ways::PUBLIC_FIELDS: '@My\Builder\Analyzer\PublicFieldsAnalyzer'
-        !php/const:My\Builder\Ways::SETTERS: '@My\Builder\Analyzer\SetterAnalyzer'
-
   my.model_builder.task:
-    class: My\Builder\Builder
+    class: ModelBuilder\Builder
     factory:
-      - '@My\Builder\Manager\DefaultBuildManager'
+      - '@ModelBuilder\Manager\DefaultBuildManager'
       - 'createBuilder'
     arguments:
       - My\Model\Data\Task
